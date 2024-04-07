@@ -345,3 +345,107 @@ def rawBytesColor():
         image = flatNumpyArray.reshape(height,width,3)
         cv2.imshow('color', image)
         cv2.waitKey(0)
+
+
+def imageAsAnArray2():
+    image = cv2.imread('penguins.jpg')
+    cv2.imshow('Pengins', image)
+    print("Starting image.  Close image to continue.")
+    cv2.waitKey(0)
+
+    (height, width, planes) = image.shape
+
+    print("Some pixels will be set to white.")
+    xPitch = int(input("Enter horizontal spacing of white pixels: "))
+    yPitch = int(input("Enter vertical spacing of white pixels: "))
+    for i in range(0,height,yPitch):    # loop over rows to become white
+        for j in range(0,width,xPitch): # loop over cols to become white
+            image[i,j] = [255,255,255]  # image as an array
+    cv2.imshow('white pixels', image)
+    print("Some white pixels.  Close image to continue.")
+    cv2.waitKey(0)
+
+    print("Some pixels will be set to black.")
+    xPitch = int(input("Enter horizontal spacing of black pixels: "))
+    yPitch = int(input("Enter vertical spacing of black pixels: "))
+    for i in range(0,height,yPitch):    # loop over rows to become white
+        for j in range(0,width,xPitch): # loop over cols to become white
+            image[i,j] = [0,0,0]        # image as an array
+    cv2.imshow('white and black pixels', image)
+    print("Some white and black pixels.  Close image to continue.")
+    cv2.waitKey(0)
+
+    image = cv2.imread('penguins.jpg')
+    cv2.imshow('Penguins', image)
+    print("Starting image.  Close image to continue.")
+    cv2.waitKey(0)
+
+    print("Red, green and blue gain will be adjusted.")
+    redGain = 0
+    while redGain < 0.1 or redGain > 10.0:
+        redGain = float(input("Enter red gain (0.1 - 10.0): "))
+    grnGain = 0
+    while grnGain < 0.1 or grnGain > 10.0:
+        grnGain = float(input("Enter green gain (0.1 - 10.0): "))
+    bluGain = 0
+    while bluGain < 0.1 or bluGain > 10.0:
+        bluGain = float(input("Enter blue gain (0.1 - 10.0): "))
+
+    # Loop over pixels in image, changing their intensities.
+    for i in range (height):
+        for j in range (width):
+            newRed = min(255,image.item(i,j,2) * redGain)
+            newGrn = min(255,image.item(i,j,1) * grnGain)
+            newBlu = min(255,image.item(i,j,0) * bluGain)
+            image.itemset((i,j,2), newRed)
+            image.itemset((i,j,1), newGrn)
+            image.itemset((i,j,0), newBlu)
+    cv2.imshow('Gain modified', image)
+    print("Gain modified penguins.  Close image to continue.")
+    cv2.waitKey(0)
+
+def regionOfInterest():
+    image = cv2.imread('penguins.jpg')
+    cv2.imshow('Pengins', image)
+    print("Starting image.  Close image to continue.")
+    cv2.waitKey(0)
+
+    (height, width, planes) = image.shape
+
+    xmin = width
+    xmax = 0
+    ymin = height
+    ymax = 0
+    print("A region of interest will be defined.")
+    while xmin < 0 or xmin >= width:
+        msg = "Enter x_min (0-"+str(width-1)+"): "
+        xmin = int(input(msg))
+    while xmax < xmin or xmax >= width:
+        msg = "Enter x_max ("+str(xmin)+"-"+str(width-1)+"): "
+        xmax = int(input(msg))
+    while ymin < 0 or ymin >= height:
+        msg = "Enter y_min (0-"+str(height-1)+"): "
+        ymin = int(input(msg))
+    while ymax < ymin or ymax >= height:
+        msg = "Enter y_max ("+str(ymin)+"-"+str(height-1)+"): "
+        ymax = int(input(msg))
+
+    roi = image[ymin:ymax+1, xmin:xmax+1]   # create another image that is the ROI specified
+                                            # this s just a reference, not a copy
+
+    # Draw a red box around the ROI in the original image.
+    for i in range(xmin, xmax+1):   # horizontal lines
+        image[ymin,i] = [0,0,255]
+        image[ymax,i] = [0,0,255]
+    for i in range(ymin, ymax+1):   # vertical lines
+        image[i,xmin] = [0,0,255]
+        image[i,xmax] = [0,0,255]
+
+    cv2.imshow('Pengins with ROI', image)
+    print("Region of interest.  Close image to continue.")
+    cv2.waitKey(0)
+
+    cv2.imshow('ROI extracted', roi)
+    print("Extracted region of interest.  Close image to continue.")
+    cv2.waitKey(0)
+

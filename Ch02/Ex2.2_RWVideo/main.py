@@ -1,17 +1,21 @@
+'''
+Program: ExpRWVideo
+
+A program to demonstrate the reading and writing of video files.
+
+Author: J. M. Hinckley
+Created: 25-Jan-2024
+'''
+
 from functions import *
 
 def main():
     # Create a menu to exercise the many functions in the functions module
 
     LFuncs = [{"title":"EXIT","func":None},
-              {"title":"Basic test function import",    "func":testFun},
-              {"title":"Test image display",            "func":testImageDisplay},
-              {"title":"Image as an array",             "func":imageAsAnArray},
-              {"title":"Exhibit image reading modes",   "func":imageReading},
-              {"title":"Grayscale image from random bytes", "func": rawBytes},
-              {"title":"Color image from random bytes", "func": rawBytesColor},
-              {"title":"Image as an array: subregions", "func":imageAsAnArray2},
-              {"title":"Region of interest", "func": regionOfInterest},
+              {"title":"Copy video file",       "func":copyVideo_Method1},
+              {"title":"Capture video segment", "func":capture},
+              {"title":"Display a live image",  "func":displayLiveImage},
               ]
 
 

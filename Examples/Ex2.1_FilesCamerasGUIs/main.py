@@ -10,8 +10,8 @@ def main():
               {"title":"Exhibit image reading modes",   "func":imageReading},
               {"title":"Grayscale image from random bytes", "func": rawBytes},
               {"title":"Color image from random bytes", "func": rawBytesColor},
-              #{"title":"Image as an array: subregions", "func":imageAsAnArray2},
-              #{"title":"Region of interest", "func": regionOfInterest},
+              {"title":"Image as an array: subregions", "func":imageAsAnArray2},
+              {"title":"Region of interest", "func": regionOfInterest},
               ]
 
 

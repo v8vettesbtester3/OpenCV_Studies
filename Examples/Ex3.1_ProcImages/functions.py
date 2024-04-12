@@ -32,8 +32,8 @@ def highPassFiltering():
 
 def cannyFiltering():
     img = cv2.imread("../../../images/statue_small.jpg", 0)
-    t_lower = 200
-    t_upper = 300
+    t_lower = int(input("Enter lower threshold: "))
+    t_upper = int(input("Enter upper threshold: "))
     dst = cv2.Canny(img, t_lower, t_upper)
     cv2.imshow("Canny Filtered",dst)
     cv2.waitKey(0)

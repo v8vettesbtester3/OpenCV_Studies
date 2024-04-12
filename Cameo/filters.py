@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import utils
+from copy import deepcopy
 
 
 def enhanceEdges(src, dst, blurKsize=7, edgeKsize=5):
@@ -114,7 +115,8 @@ def cannyFilter(src):
     t_lower = 200
     t_upper = 300
     dst = cv2.Canny(src, t_lower, t_upper)
-    dst = src
+    src = deepcopy(dst)
+    #dst = src
     # print(dst.shape)
     # for i in range(dst.shape[0]):   # 480
     #     for j in range (dst.shape[1]): # 640
@@ -122,4 +124,4 @@ def cannyFilter(src):
     #             print("("+str(i)+","+str(j)+"): "+str(dst[i][j]))
     #print (dst)
     #input("Enter 2 continue")
-    return dst
+    return src

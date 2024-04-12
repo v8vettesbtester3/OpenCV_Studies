@@ -41,12 +41,9 @@ class Cameo(object):
                     self._LFilters[choice]["filter"].apply(frame, frame)
                 elif choice == len(self._LFilters):
                     filters.enhanceEdges(frame, frame)
-                elif choice == len(self._LFilters)+1:
-                    frame = filters.cannyFilter(frame)
-                    # for i in range(frame.shape[0]):
-                    #     print(i,frame[i,0])
-                    # input("Enter to continue")
                 # add new filter calls here--------------------------
+                # elif choice == len(self._LFilters)+1:
+                #     frame = filters.cannyFilter(frame)
                 else:
                     pass    # choice is out of range; no filtering
 
@@ -82,9 +79,9 @@ def main():
         idx = len(cam._LFilters)
         print(idx, "Enhance Edges")
 
-        idx += 1
-        print(idx, "Canny Filter")
         # add new menu items here ------------------------
+        # idx += 1
+        # print(idx, "Canny Filter")
         print()
 
         choice = -2

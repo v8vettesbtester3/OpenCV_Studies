@@ -111,17 +111,3 @@ class EmbossFilter(VConvolutionFilter):
         VConvolutionFilter.__init__(self, kernel)
 
 
-def cannyFilter(src):
-    t_lower = 200
-    t_upper = 300
-    dst = cv2.Canny(src, t_lower, t_upper)
-    src = deepcopy(dst)
-    #dst = src
-    # print(dst.shape)
-    # for i in range(dst.shape[0]):   # 480
-    #     for j in range (dst.shape[1]): # 640
-    #         if dst[i][j] > 0:
-    #             print("("+str(i)+","+str(j)+"): "+str(dst[i][j]))
-    #print (dst)
-    #input("Enter 2 continue")
-    return src

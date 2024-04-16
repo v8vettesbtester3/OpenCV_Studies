@@ -10,7 +10,6 @@ def is_fourcc_available(codec):
         return False
 
 def enumerate_fourcc_codecs():
-    #codecs_to_test = ["DIVX", "XVID", "MJPG", "X264", "WMV1", "WMV2", "FMP4","mp4v", "avc1", "I420", "IYUV", "mpg1", "H264"]
     codecs_to_test = ["DIVX", "XVID", "MJPG", "WMV1", "WMV2", "FMP4","mp4v", "avc1", "I420", "IYUV", "mpg1", "H264"]
     available_codecs = []
     for codec in codecs_to_test:
@@ -67,8 +66,7 @@ def copyVideo_Method1():
     # Old MPEG - 4
     cv2.VideoWriter('5_mpeg4Old_MP4V.mp4',# output video file name;
                                   # any existing file with same name is overwritten
-                                    # cv2.VideoWriter.fourcc('M', 'P', '4', 'V'),  # video codec
-                                    cv2.VideoWriter.fourcc(*'mp4v'),  # video codec
+                                  cv2.VideoWriter.fourcc(*'mp4v'),  # video codec
                                   fps,                  # frame rate
                                   size),                 # frame size
 
@@ -76,17 +74,9 @@ def copyVideo_Method1():
     #cv2.VideoWriter('6_mpeg4New_X264.mp4',# output video file name;
     cv2.VideoWriter('6_mpeg4New_H264.mp4',  # output video file name;
                                     # any existing file with same name is overwritten
-                                  #cv2.VideoWriter.fourcc('X', '2', '6', '4'),  # video codec
                                   cv2.VideoWriter.fourcc(*'avc1'),  # video codec
                                   fps,                  # frame rate
                                   size),                 # frame size
-
-    # # Flash
-    # cv2.VideoWriter('8_Flash_FLV1.flv',   # output video file name;
-    #                               # any existing file with same name is overwritten
-    #                               cv2.VideoWriter.fourcc('F', 'L', 'V', '1'),  # video codec
-    #                               fps,                  # frame rate
-    #                               size)                 # frame size
         ]
 
 
@@ -135,11 +125,8 @@ def capture():
 
 def onMouse(event, x, y, flags, param):
     global clicked
-    #print("Mouse event fired")
-    #print(event, cv2.EVENT_LBUTTONUP)
     if event == cv2.EVENT_LBUTTONUP:
         clicked = True
-        #print("clicked set True****************************************************")
 
 
 def displayLiveImage():
@@ -154,7 +141,6 @@ def displayLiveImage():
     print("Showing camera feed.  Click window or press any key to stop.")
     success, frame = cameraCapture.read()
     while success and cv2.waitKey(1) == -1 and not clicked:
-        #print("clicked is",clicked)
         cv2.imshow('The Window', frame)
         success, frame = cameraCapture.read()
 

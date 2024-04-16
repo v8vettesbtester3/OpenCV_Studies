@@ -6,7 +6,7 @@ def main():
     LFuncs = [{"title":"EXIT","func":None},
               {"title":"High Pass Filtering",    "func":highPassFiltering},
               {"title":"Canny Filtering",            "func":cannyFiltering},
-              #{"title":"Image as an array",             "func":imageAsAnArray},
+              {"title":"Find a contour on a square",     "func":contour1},
               #{"title":"Exhibit image reading modes",   "func":imageReading},
               #{"title":"Grayscale image from random bytes", "func": rawBytes},
               #{"title":"Color image from random bytes", "func": rawBytesColor},

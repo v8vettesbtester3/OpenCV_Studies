@@ -24,7 +24,7 @@ class Cameo(object):
         self._LFilters.append({"title":"Emboss Filter","filter":self._embossFilter})
         # -----------------------------------------------------------------
 
-    def runFilterDemo(self, choice):
+    def run(self, choice):
         ''' Run the main loop. '''
 
         # Get a live image and filter it
@@ -91,7 +91,7 @@ def main():
         print()
 
         if (choice > -1):
-            cam.runFilterDemo(choice)
+            cam.run(choice)
 
 
             ans = input("Another? (y/n): ")

@@ -67,7 +67,6 @@ class Cameo(object):
 
 def main():
     cam = Cameo()
-    #for i in range(5):
     while True:
         print("Space\tscreenshot\nTab\t\tstart-stop screencast\nEscape\texit")
 
@@ -81,7 +80,7 @@ def main():
 
         # add new menu items here ------------------------
         # idx += 1
-        # print(idx, "Canny Filter")
+        # print(idx, "new filter...")
         print()
 
         choice = -2

@@ -1,3 +1,12 @@
+'''
+Program: ExpProcImages
+
+A program to demonstrate image processing operatoins.
+
+Author: J. M. Hinckley
+Created: 2024
+'''
+
 from functions import *
 
 def main():
@@ -7,11 +16,6 @@ def main():
               {"title":"High Pass Filtering",    "func":highPassFiltering},
               {"title":"Canny Filtering",            "func":cannyFiltering},
               {"title":"Find a contour on a square",     "func":contour1},
-              #{"title":"Exhibit image reading modes",   "func":imageReading},
-              #{"title":"Grayscale image from random bytes", "func": rawBytes},
-              #{"title":"Color image from random bytes", "func": rawBytesColor},
-              #{"title":"Image as an array: subregions", "func":imageAsAnArray2},
-              #{"title":"Region of interest", "func": regionOfInterest},
               ]
 
 
@@ -36,3 +40,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

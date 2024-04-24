@@ -17,6 +17,7 @@ def main():
               {"title": "High Pass Filtering", "func": highPassFiltering},
               {"title": "Canny Filtering", "func": cannyFiltering},
               {"title": "Find a contour on a square", "func": contour1},
+              {"title": "Find a contour on an image", "func": contour2},
               ]
 
     while True:  # continue until an exit is requested

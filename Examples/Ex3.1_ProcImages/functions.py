@@ -63,6 +63,24 @@ def contour2():
 
         # find bounding box coordinates
         x, y, w, h = cv2.boundingRect(c)
+        cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 2)
+
+        # find the minimum area
+        rect = cv2.minAreaRect(c)
+        # calculate coordinates of hte minimum area rectangle
+        box = cv2.boxPoints(rect)
+        # normalize coordinates to integers
+        box = np.intp(box)
+        # draw contours
+        cv2.drawContours(img, [box], 0, (0,0,255), 0)
+
+        # calculate the center and radius of minimum enclosing circle
+        (x, y), radius = cv2.minEnclosingCircle(c)
+        # cast to integers
+        center = (int(x), int(y))
+        radius = int(radius)
+        # draw the circle
+        img = cv2.circle(img, center, radius, (0,255,0), 2)
 
     cv2.drawContours(img, contours, -1, (255, 0, 0), 1)
     cv2.imshow("contours", img)

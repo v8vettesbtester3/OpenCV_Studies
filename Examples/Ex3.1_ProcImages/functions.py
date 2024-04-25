@@ -67,8 +67,8 @@ def contour2():
     # Thresholding in THRESH_BINARY mode: if source pixel intensity is > thresh (127), then it is set to maxval (255)
     # Return values: ret is the threshold used (127) and thresh is the thresholded image.
     # Reference: https://docs.opencv.org/4.9.0/d7/d4d/tutorial_py_thresholding.html
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+    grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(grayImg, 127, 255, cv2.THRESH_BINARY)
     cv2.imshow("Thresholded", thresh)
 
     # Find the contours in a binary image
@@ -89,15 +89,23 @@ def contour2():
         # find bounding box coordinates
         x, y, w, h = cv2.boundingRect(c)
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 2)
+        cv2.imshow("Green bounding box", img)
+        areaBB = w*h
+        print("Area of green bounding box:", areaBB)
 
         # find the minimum area
+        # minAreaRect() returns (X_center, Y_center), (Width, Height), Angle (degrees)
         rect = cv2.minAreaRect(c)
-        # calculate coordinates of hte minimum area rectangle
+        # calculate coordinates of the minimum area rectangle
         box = cv2.boxPoints(rect)
         # normalize coordinates to integers
         box = np.intp(box)
         # draw contours
         cv2.drawContours(img, [box], 0, (0,0,255), 0)
+        cv2.imshow("Red minimum area bounding box", img)
+        areaBBMin = int((rect[1][0]*rect[1][1]))
+        print("Area of minimum area bounding box:", areaBBMin)
+        print("Area ratio:",(areaBBMin/areaBB))
 
         # calculate the center and radius of minimum enclosing circle
         (x, y), radius = cv2.minEnclosingCircle(c)
@@ -106,11 +114,10 @@ def contour2():
         radius = int(radius)
         # draw the circle
         img = cv2.circle(img, center, radius, (0,255,0), 2)
+        cv2.imshow("Green enclosing circle", img)
 
     cv2.drawContours(img, contours, -1, (255, 0, 0), 1)
     cv2.imshow("contours", img)
-
-    cv2.imwrite('h.jpg', img)
 
     cv2.waitKey()
     cv2.destroyAllWindows()

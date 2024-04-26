@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import os
 from scipy import ndimage
 
 
@@ -15,7 +14,7 @@ def highPassFiltering():
                            [-1, 1, 2, 1, -1],
                            [-1, -1, -1, -1, -1]])
 
-    img = cv2.imread("../../../images/statue_small.jpg", 0)
+    img = cv2.imread("../../../images/statue_small.jpg", 0)    # set path correctly for your installation.
 
     k3 = ndimage.convolve(img, kernel_3x3)
     k5 = ndimage.convolve(img, kernel_5x5)
@@ -33,7 +32,7 @@ def highPassFiltering():
 
 
 def cannyFiltering():
-    img = cv2.imread("../../../images/statue_small.jpg", 0)
+    img = cv2.imread("../../../images/statue_small.jpg", 0)    # set path correctly for your installation.
     t_lower = int(input("Enter lower threshold: "))
     t_upper = int(input("Enter upper threshold: "))
     dst = cv2.Canny(img, t_lower, t_upper)
@@ -72,7 +71,7 @@ def contour2():
     # Read a sample image file, without changing it.  Adjust your path to match your location of the images folder.
     # Then, down-sample the input image using pyrDown()
     # Reference: https://docs.opencv.org/4.x/d4/d1f/tutorial_pyramids.html
-    img = cv2.imread("../../../images/hammer.jpg", cv2.IMREAD_UNCHANGED)
+    img = cv2.imread("../../../images/hammer.jpg", cv2.IMREAD_UNCHANGED)    # set path correctly for your installation.
     cv2.imshow("1. Source: Full Size", img)
     img = cv2.pyrDown(img)
     cv2.imshow("2. Source: Half Size", img)
@@ -123,7 +122,11 @@ def contour2():
         # normalize coordinates to integers
         box = np.intp(box)
         # draw contours
-        cv2.drawContours(img, [box], 0, (0, 0, 255), 0)
+        cv2.drawContours(img,           # image
+                         [box],         # an array of contours to draw
+                         0,             # index of the contour to draw
+                         (0, 0, 255),   # color to use
+                         0)             # line thickness
 
         # mark each corner of the bounding box to understand the meaning of the values returned from boxPoints.
         radius = 3

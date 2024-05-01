@@ -160,5 +160,20 @@ def contour2():
 
     # ------------------------------------------------------------------
 
+    black = np.zeros_like(img)
+
+    for c in contours:
+        epsilon = 0.01 * cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, epsilon, True)
+        hull = cv2.convexHull(c)
+
+        cv2.drawContours(black, [c], -1, (0, 255, 0), 2)
+        cv2.drawContours(black, [approx], -1, (255, 255, 0), 2)
+        cv2.drawContours(black, [hull], -1, (0, 255, 255), 2)
+
+    cv2.imshow("8. Hull", black)
+
+    # ------------------------------------------------------------------
+
     cv2.waitKey()
     cv2.destroyAllWindows()

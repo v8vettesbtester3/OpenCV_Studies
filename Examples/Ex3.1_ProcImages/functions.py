@@ -49,6 +49,9 @@ def contour1():
     ret, thresh = cv2.threshold(img, 127, 255, 0)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
+    perimeter = cv2.arcLength(contours[0], True)
+    print("100 x 100 square.  Perimeter =",perimeter)
+
     color = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     img = cv2.drawContours(color, contours, -1, (0, 255, 0), 2)
     cv2.imshow("contours", color)
@@ -160,16 +163,30 @@ def contour2():
 
     # ------------------------------------------------------------------
 
+    # Make an image array of the same type as size as img.
+    # Fill it with zeros.
     black = np.zeros_like(img)
 
     for c in contours:
+
+        # arcLength() gives the perimeter length (distance around the object)
+        # along the contour.
+        # This is used to obtain a specification of the maximum
+        # difference between the contour and the approximation, below
         epsilon = 0.01 * cv2.arcLength(c, True)
+        print ("Maximum separation between contour and poly-line:", epsilon)
+
+        # Approximate the contour with a curve having fewer points.
+        # The approximation should be no farther than epsilon from the
+        # original contour.
         approx = cv2.approxPolyDP(c, epsilon, True)
+
+        # Calculate a convex hull around the contour.
         hull = cv2.convexHull(c)
 
-        cv2.drawContours(black, [c], -1, (0, 255, 0), 2)
-        cv2.drawContours(black, [approx], -1, (255, 255, 0), 2)
-        cv2.drawContours(black, [hull], -1, (0, 255, 255), 2)
+        cv2.drawContours(black, [c], -1, (0, 255, 0), 2)        # draw the original contour in green
+        cv2.drawContours(black, [approx], -1, (255, 255, 0), 2) # draw the approximate poly-line in cyan
+        cv2.drawContours(black, [hull], -1, (0, 255, 255), 2)   # draw the convex hull in yellow
 
     cv2.imshow("8. Hull", black)
 

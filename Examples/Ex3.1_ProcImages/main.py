@@ -18,6 +18,8 @@ def main():
               {"title": "Canny Filtering", "func": cannyFiltering},
               {"title": "Find a contour on a square", "func": contour1},
               {"title": "Find a contour on an image", "func": contour2},
+              {"title": "Detect lines in an image", "func": detectLines},
+              {"title": "Detect circles in an image", "func": detectCircles},
               ]
 
     while True:  # continue until an exit is requested

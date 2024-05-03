@@ -32,6 +32,12 @@ def highPassFiltering():
 
 
 def cannyFiltering():
+    # Apply Canny filtering to obtain edges
+    # If a pixel gradient is higher than the upper threshold, the pixel is accepted as an edge
+    # If a pixel gradient value is below the lower threshold, then it is rejected.
+    # If the pixel gradient is between the two thresholds, then it will be accepted only if
+    # it is connected to a pixel that is above the upper threshold.
+
     img = cv2.imread("../../../images/statue_small.jpg", 0)    # set path correctly for your installation.
     t_lower = int(input("Enter lower threshold: "))
     t_upper = int(input("Enter upper threshold: "))
@@ -194,3 +200,58 @@ def contour2():
 
     cv2.waitKey()
     cv2.destroyAllWindows()
+
+
+def detectLines():
+    # Detect the lines present in an image.
+
+    # Read a sample image file, without changing it.  Adjust your path to match your location of the images folder.
+    img = cv2.imread("../../../images/lines.jpg", cv2.IMREAD_UNCHANGED)    # set path correctly for your installation.
+    cv2.imshow("1. Starting image", img)
+
+    # Convert the color image to a grayscale image.
+    grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imshow("2. Grayscale image", grayImg)
+
+    # Apply Canny filtering to obtain edges
+    # If a pixel gradient is higher than the upper threshold, the pixel is accepted as an edge
+    # If a pixel gradient value is below the lower threshold, then it is rejected.
+    # If the pixel gradient is between the two thresholds, then it will be accepted only if
+    # it is connected to a pixel that is above the upper threshold.
+
+    t_upper = 600 # int(input("Enter upper Canny threshold: "))
+    t_lower = 200 # int(input("Enter lower Canny threshold: "))
+    edges = cv2.Canny(grayImg, t_lower, t_upper)
+    cv2.imshow("3. Canny Filtered", edges)
+
+    # Apply the probabilistic Hough transform to detect the lines.
+    # Minimum line length. Line segments shorter than that are rejected.
+    minLineLength = int(input("Enter minimum line length: ")) # 50
+
+    # Maximum allowed gap between points on the same line to link them.
+    maxLineGap = int(input("Enter maximum allowed gap in line: ")) # 20
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180.0, 20, minLineLength, maxLineGap)
+
+
+
+    if lines is not None:
+        sz = lines.size
+        if sz > 0:
+            (a,b,c) = lines.shape
+            print (a,"lines detected.")
+            for i in range(a):  # loop over lines
+                (x1, y1, x2, y2) = lines[i][0]
+                cv2.line(img, (x1, y1), (x2, y2), (0, 255,0), 2)    # draw green lines in the original image
+
+            cv2.imshow("4. Lines", img)
+    else:
+        print("No lines detected.")
+
+    # ------------------------------------------------------------------
+
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+
+
+def detectCircles():
+    pass

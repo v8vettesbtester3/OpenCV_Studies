@@ -254,4 +254,52 @@ def detectLines():
 
 
 def detectCircles():
-    pass
+    # Detect the circles present in an image.
+
+    # Read a sample image file, without changing it.  Adjust your path to match your location of the images folder.
+    img = cv2.imread("../../../images/planet_glow.jpg", cv2.IMREAD_UNCHANGED)    # set path correctly for your installation.
+    cv2.imshow("1. Starting image", img)
+
+    # Convert the color image to a grayscale image.
+    grayImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imshow("2. Grayscale image", grayImg)
+
+    # Blur the image to remove some noise.
+    grayImg = cv2.medianBlur(grayImg, 5)
+    cv2.imshow("3. Median blurred image", grayImg)
+
+    # Apply the Hough transform to detect the circles.
+    circles = cv2.HoughCircles(grayImg,
+                               cv2.HOUGH_GRADIENT,  # detection method
+                               1,           # Inverse ratio of the accumulator resolution to the image resolution.
+                               120,         # Minimum distance between the centers of the detected circles.
+                               param1=300,  # Upper threshold for Canny edge detection.  Lower threshold is half this.
+                               param2=30,   # The accumulator threshold for the circle centers at the detection stage.
+                               minRadius=0, # minimum circle radius
+                               maxRadius=0) # maximum circle radius.  <= 0 means returns ctrs w/o considering radius.
+
+    circles = np.uint16(np.around(circles))
+
+
+
+
+
+    if circles is not None:
+        sz = circles.size
+        if sz > 0:
+            (a,b,c) = circles.shape
+            print (b,"circles detected.")
+            for c in circles[0,:]:  # loop over circles
+                (xc, yc) = (c[0], c[1])     # coordinates of the center
+                rad = c[2]                  # radius
+                cv2.circle(img, (xc, yc), rad, (0, 255, 0), 3)    # draw green circles in the original image
+                cv2.circle(img, (xc, yc), 2, (0, 0, 255), 3)      # red dot at the circle centers in the original image
+
+            cv2.imshow("4. Circles", img)
+    else:
+        print("No circles detected.")
+
+    # ------------------------------------------------------------------
+
+    cv2.waitKey()
+    cv2.destroyAllWindows()

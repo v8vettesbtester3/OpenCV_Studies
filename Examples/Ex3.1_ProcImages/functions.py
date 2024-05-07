@@ -268,15 +268,19 @@ def detectCircles():
     grayImg = cv2.medianBlur(grayImg, 5)
     cv2.imshow("3. Median blurred image", grayImg)
 
+    minDist = int(input("Enter minimum distance between the centers of the detected circles: ")) # 120
+    highLimCanny = int(input("Enter upper threshold for Canny edge detection.  Lower threshold is half this: ")) # 300
+
+
     # Apply the Hough transform to detect the circles.
     circles = cv2.HoughCircles(grayImg,
                                cv2.HOUGH_GRADIENT,  # detection method
-                               1,           # Inverse ratio of the accumulator resolution to the image resolution.
-                               120,         # Minimum distance between the centers of the detected circles.
-                               param1=300,  # Upper threshold for Canny edge detection.  Lower threshold is half this.
-                               param2=30,   # The accumulator threshold for the circle centers at the detection stage.
-                               minRadius=0, # minimum circle radius
-                               maxRadius=0) # maximum circle radius.  <= 0 means returns ctrs w/o considering radius.
+                               1,                   # Inverse ratio of the accumulator resolution to the image resolution.
+                               minDist,             # Minimum distance between the centers of the detected circles.
+                               param1=highLimCanny, # Upper threshold for Canny edge detection.  Lower threshold is half this.
+                               param2=30,           # The accumulator threshold for the circle centers at the detection stage.
+                               minRadius=0,         # minimum circle radius
+                               maxRadius=0)         # maximum circle radius.  <= 0 means returns ctrs w/o considering radius.
 
     circles = np.uint16(np.around(circles))
 

@@ -14,7 +14,7 @@ def main():
     # Create a menu to exercise the many functions in the functions module
 
     LFuncs = [{"title": "EXIT", "func": None},
-              #{"title": "High Pass Filtering", "func": highPassFiltering},
+              {"title": "Detect faces in still image", "func": detectFaceStillImage},
               ]
 
     while True:  # continue until an exit is requested

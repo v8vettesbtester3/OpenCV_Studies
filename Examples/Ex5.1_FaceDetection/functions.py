@@ -53,25 +53,25 @@ def detectFaceVideo():
     #cv2.namedWindow('Video Faces')
 
 
-    camera = cv2.VideoCapture(0)
+    camera = cv2.VideoCapture(0)    # Select the camera for input
 
-    while (cv2.waitKey(1) == -1):
-        success, frame = camera.read()
+    while (cv2.waitKey(1) == -1):   # Loop until <esc> key is pressed
+        success, frame = camera.read()  # grab an image
 
         if success:
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert color to grayscale
 
-            faces = face_cascade.detectMultiScale(gray, 1.3, 5, minSize=(120,120))
+            faces = face_cascade.detectMultiScale(gray, 1.3, 5, minSize=(120,120))  # detect faces
 
-            for (x,y,w,h) in faces:
+            for (x,y,w,h) in faces:     # draw blue boxes around any faces detected
                 cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 2)
 
-                roi_gray = gray[y:y+h, x:x+w]
-                eyes = eye_cascade.detectMultiScale(roi_gray, 1.03, 5, minSize = (40, 40))
+                roi_gray = gray[y:y+h, x:x+w]   # isolate further analysis to just a face
+                eyes = eye_cascade.detectMultiScale(roi_gray, 1.03, 5, minSize = (40, 40))  # detect eyes therein
 
-                for (ex, ey, ew, eh) in eyes:
+                for (ex, ey, ew, eh) in eyes:   # draw green boxes around any eyes detected
                     cv2.rectangle(frame, (x+ex,y+ey), (x+ex+ew, y+ey+eh), (0,255,0), 2)
 
-            cv2.imshow('Video Faces', frame)
+            cv2.imshow('Video Faces', frame)    # show the annotated frame
 
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows()     # after <esc> key pressed, close all windows.

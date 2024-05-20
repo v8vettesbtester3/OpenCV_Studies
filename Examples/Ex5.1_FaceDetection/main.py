@@ -15,6 +15,7 @@ def main():
 
     LFuncs = [{"title": "EXIT", "func": None},
               {"title": "Detect faces in still image", "func": detectFaceStillImage},
+              {"title": "Detect face in video", "func": detectFaceVideo},
               ]
 
     while True:  # continue until an exit is requested

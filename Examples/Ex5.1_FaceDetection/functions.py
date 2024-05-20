@@ -50,7 +50,7 @@ def detectFaceVideo():
     face_cascade = cv2.CascadeClassifier("./cascades/haarcascade_frontalface_default.xml")
     eye_cascade = cv2.CascadeClassifier("./cascades/haarcascade_eye.xml")
 
-    #cv2.namedWindow('Video Faces')
+    cv2.namedWindow('Video Faces')
 
 
     camera = cv2.VideoCapture(0)    # Select the camera for input

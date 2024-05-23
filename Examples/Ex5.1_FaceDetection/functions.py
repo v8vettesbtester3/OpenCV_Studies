@@ -78,6 +78,8 @@ def detectFaceVideo():
 
 
 def genFaceData():
+    # Generate facial recognition training data
+
     # Captures several video frames from the camera, in rapid succession.
     # For each frame, an attempt is made to detect a face.
     # If a face is detected, a sub-image containing just that face is defined.
@@ -88,10 +90,12 @@ def genFaceData():
     # .pgm files are Portable Gray Map files.  They are monochromatic (grayscale).
 
     # As a safeguard, this function will capture at most 100 images.  If the user
-    # does not stop imaging before 100 are obtained, the function will stop grabbing
+    # does not stop imaging before MAXCOUNT are obtained, the function will stop grabbing
     # images of its own accord.
 
     import os
+
+    MAXCOUNT = 200  # maximum number of training images to capture
 
     initials = input("Enter your initials (no spaces): ")
     output_folder = '../../../data/at/'+initials      # path to folder containing generated images
@@ -107,7 +111,7 @@ def genFaceData():
     count = 0
 
     # Grab images until either the user presses a key it the window or 100 images have been captured.
-    while cv2.waitKey(1) == -1 and count < 100:
+    while cv2.waitKey(1) == -1 and count < MAXCOUNT:
         success, frame = camera.read()
         if success:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

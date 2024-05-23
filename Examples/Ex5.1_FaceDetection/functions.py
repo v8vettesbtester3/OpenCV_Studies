@@ -75,3 +75,51 @@ def detectFaceVideo():
             cv2.imshow('Video Faces', frame)    # show the annotated frame
 
     cv2.destroyAllWindows()     # after <esc> key pressed, close all windows.
+
+
+def genFaceData():
+    # Captures several video frames from the camera, in rapid succession.
+    # For each frame, an attempt is made to detect a face.
+    # If a face is detected, a sub-image containing just that face is defined.
+    # The sub-image is rescaled to be 200 X 200 pixels and written to a file.
+    # Each thusly formed face image is written to a separate file.
+    # Each such file is given a sequential name: 1.pgm, 2.pgm, 3.pgm, etc.
+    # All files are stored at the path ../../../data/at/<user-supplied-initials>.pgm
+    # .pgm files are Portable Gray Map files.  They are monochromatic (grayscale).
+
+    # As a safeguard, this function will capture at most 100 images.  If the user
+    # does not stop imaging before 100 are obtained, the function will stop grabbing
+    # images of its own accord.
+
+    import os
+
+    initials = input("Enter your initials (no spaces): ")
+    output_folder = '../../../data/at/'+initials      # path to folder containing generated images
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)      # create the destination folder if it does not exist
+
+    # Set the Haar cascade that will be used to detect faces
+    face_cascade = cv2.CascadeClassifier('./cascades/haarcascade_frontalface_default.xml')
+
+    camera = cv2.VideoCapture(0)    # connect to the camera
+
+    count = 0
+
+    # Grab images until either the user presses a key it the window or 100 images have been captured.
+    while cv2.waitKey(1) == -1 and count < 100:
+        success, frame = camera.read()
+        if success:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = face_cascade.detectMultiScale(gray, 1.3, 5, minSize=(120,120))
+
+            for (x,y, w, h) in faces:  # Loop over the faces found in the frame
+                cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 2)   # Draw a rectangle around the face
+                face_img = cv2.resize(gray[y:y+h, x:x+w], (200,200))    # Resize the sub-image of the face
+                face_filename = '%s/%d.pgm' % (output_folder, count)    # Consecutive file names
+                cv2.imwrite(face_filename, face_img)    # Write the image to the named file.
+                count += 1      # Number for the next image file
+
+            cv2.imshow('Capturing faces...', frame)
+
+    cv2.destroyAllWindows()     # after <esc> key pressed, close all windows.

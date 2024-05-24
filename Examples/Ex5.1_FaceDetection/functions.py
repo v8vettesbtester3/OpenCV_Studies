@@ -184,8 +184,9 @@ def read_images(path, image_size):
 
 
 def recognizeFaces():
+    # Tutorial: https://docs.opencv.org/3.4/da/d60/tutorial_face_main.html
+
     path_to_training_images = '../../../data/at'
-    #path_to_training_images = '..\\..\\..\\data\\at'
     training_image_size = (200, 200)
     names, training_images, training_labels = read_images(path_to_training_images, training_image_size)
 

@@ -17,6 +17,7 @@ def main():
               {"title": "Detect faces in still image", "func": detectFaceStillImage},
               {"title": "Detect face in video", "func": detectFaceVideo},
               {"title": "Generate data for face recognition", "func": genFaceData},
+              {"title": "Face recognition", "func": recognizeFaces},
               ]
 
     while True:  # continue until an exit is requested

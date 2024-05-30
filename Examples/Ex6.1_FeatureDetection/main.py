@@ -15,8 +15,9 @@ def main():
 
     LFuncs = [{"title": "EXIT", "func": None},
               {"title": "Detect corners using Harris method", "func": detectHarrisCorners},
+              {"title": "Detect corners using FAST method", "func": detectFASTFeatures},
               {"title": "Find objects using ORB method", "func": orbFinder},
-              {"title": "Find objects using ORB method and FLANN finder", "func": orbFinderFLANN},
+              #{"title": "Find objects using ORB method and FLANN finder", "func": orbFinderFLANN},
               ]
 
     while True:  # continue until an exit is requested

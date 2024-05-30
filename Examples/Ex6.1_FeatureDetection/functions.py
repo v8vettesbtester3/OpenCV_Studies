@@ -132,7 +132,73 @@ def detectHarrisCorners():
 
 
 
+def detectFASTFeatures():
+    # detect corners in a static image using the FAST (Features from Accelerated Segment Test) method
+    # Reference: https://docs.opencv.org/4.9.0/df/d0c/tutorial_py_fast.html
+    # https://docs.opencv.org/4.x/df/d74/classcv_1_1FastFeatureDetector.html
+
+    # Read a specifed image as its grayscale version
+    img = cv2.imread('../../../images/5_of_diamonds.png', cv2.IMREAD_GRAYSCALE) # read the static image file as gray
+
+    # Initialize a FAST object
+    # Non-max suppression is used.
+    fast = cv2.FastFeatureDetector.create(nonmaxSuppression=True)
+
+    # Set the detection criteria
+    # Detection of corners involves examining 16 pixels which
+    # lie on a circle of radius 3 centered on the pixel in question.
+
+    # A corner is identified to exist at a pixel if a certain number of surrounding
+    # contiguous pixels are brighter than the central pixel by a specified threshold,
+    # or, they are darker by that threshold.
+
+    # There are 3 different types of detection available
+    # 2: This is identified as TYPE_5_8, meaning that 5 contiguous pixels out of 8 satisfy the detection criteria.
+    #    This is the least strict criterion.
+    # 1: This is identified as TYPE_7_12, meaning that 7 contiguous pixels out of 12 satisfy the detection criteria.
+    # 0: This is identified as TYPE_9_16, meaning that 9 contiguous pixels out of 16 satisfy the detection criteria.
+    #    This is the most strict criterion.
+
+    # Set criterion (type)
+    stype = ''
+    while stype not in ('5_8','7_12','9_16'):
+        stype = input("Enter detection criterion (5_8, 7_12, 9_16): ")
+    if stype == '5_8':
+        type = 2
+    elif stype == '7_12':
+        type = 1
+    else:
+        type = 0
+    fast.setType(type)
+
+    # Set the threshold
+    thresh = -1
+    while thresh not in range(256):
+        thresh = int(input("Enter threshold (0-255): "))
+    fast.setThreshold(thresh)
+
+    # Find and draw the keypoints
+    kp = fast.detect(img, None)
+    img2 = cv2.drawKeypoints(img, kp, None, color=(0,255,0))
+
+    # Show the parameters
+    print("Threshold: {}".format(fast.getThreshold()))
+    print("Neighborhood: {}".format(fast.getType()))
+    print("NonmaxSuppression:{}".format(fast.getNonmaxSuppression()))
+    print("Total Keypoints: {}".format(len(kp)))
+
+    cv2.imshow("FAST Corners", img2)
+
+
+    cv2.waitKey()   # wait here until the image is closed.
+
+    cv2.destroyAllWindows()
+
+
 def orbFinder():
+    # ORB (Oriented FAST and Rotated BRIEF)
+    # FAST (Features from Accelerated Segment Test): keypoint detector
+    # BRIEF (Binary Robust Independent Elementary Features): a descriptor
 
     # Load the images.
     img0 = cv2.imread('../../../images/nasa_logo.png', cv2.IMREAD_GRAYSCALE)    # query image
@@ -232,10 +298,10 @@ def orbFinder():
 def orbFinderFLANN():
 
     # Load the images.
-    img0 = cv2.imread('../../../images/gauguin_entre_les_lys.jpg', cv2.IMREAD_GRAYSCALE)    # query image
-    img1 = cv2.imread('../../../images/gauguin_paintings.png', cv2.IMREAD_GRAYSCALE) # scene
-    # img0 = cv2.imread('../../../images/nasa_logo.png', cv2.IMREAD_GRAYSCALE)    # query image
-    # img1 = cv2.imread('../../../images/kennedy_space_center.jpg', cv2.IMREAD_GRAYSCALE) # scene
+    #img0 = cv2.imread('../../../images/gauguin_entre_les_lys.jpg', cv2.IMREAD_GRAYSCALE)    # query image
+    #img1 = cv2.imread('../../../images/gauguin_paintings.png', cv2.IMREAD_GRAYSCALE) # scene
+    img0 = cv2.imread('../../../images/nasa_logo.png', cv2.IMREAD_GRAYSCALE)    # query image
+    img1 = cv2.imread('../../../images/kennedy_space_center.jpg', cv2.IMREAD_GRAYSCALE) # scene
 
     # Perform ORB feature detection and description
     orb = cv2.ORB.create()
@@ -259,12 +325,13 @@ def orbFinderFLANN():
 
     # Populate the mask based on the ratio test
     for i, (m,n) in enumerate(matches):
-        if m.distance < 0.7 * n.distance:
+        if m.distance < 0.7 * n.distance:   # originally, threshold was 0.7
             mask_matches[i] = [1, 0]
+            #print("Match at i =",i)
 
     # Draw the matches that passed the ratio test
-    draw_params = dict(matchColor=(0, 255, 0),
-                       singlePointColor=(255, 0, 0),
+    draw_params = dict(matchColor=(0, 255, 0),          # color tuple in (R,G,B) order
+                       singlePointColor=(255, 0, 0),    # color tuple in (R,G,B) order
                        matchesMask=mask_matches,
                        flags=0)
     img_matches = cv2.drawMatchesKnn(img0, kp0, img1, kp1, matches, None, **draw_params)

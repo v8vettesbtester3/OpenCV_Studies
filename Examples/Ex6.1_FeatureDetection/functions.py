@@ -298,13 +298,32 @@ def orbFinder():
 def orbFinderFLANN():
 
     # Load the images.
-    #img0 = cv2.imread('../../../images/gauguin_entre_les_lys.jpg', cv2.IMREAD_GRAYSCALE)    # query image
-    #img1 = cv2.imread('../../../images/gauguin_paintings.png', cv2.IMREAD_GRAYSCALE) # scene
     img0 = cv2.imread('../../../images/nasa_logo.png', cv2.IMREAD_GRAYSCALE)    # query image
     img1 = cv2.imread('../../../images/kennedy_space_center.jpg', cv2.IMREAD_GRAYSCALE) # scene
 
     # Perform ORB feature detection and description
+    # Reference: https://docs.opencv.org/3.4/db/d95/classcv_1_1ORB.html
     orb = cv2.ORB.create()
+
+    # Set the scale factor
+    scale = -1
+    while scale < 1.0 or scale > 2.0:
+        scale = float(input("Enter scale factor (1.0 - 2.0): "))
+    orb.setScaleFactor(scale)
+
+    # Set number of levels
+    size = img1.shape
+    minDimension = min(size[0], size[1])
+    nlevels = int(numpy.log(minDimension/4) / numpy.log(scale))
+    print("Number of levels: ", nlevels)
+    orb.setNLevels(nlevels)
+
+    # Set the threshold
+    thresh = -1
+    while thresh not in range(256):
+        thresh = int(input("Enter threshold (0-255): "))
+    orb.setFastThreshold(thresh)
+
     kp0, des0 = orb.detectAndCompute(img0, None)
     kp1, des1 = orb.detectAndCompute(img1, None)
 
@@ -314,11 +333,11 @@ def orbFinderFLANN():
     search_params = dict(checks=50)
 
     # Perform FLANN-based matching
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    matcher = cv2.FlannBasedMatcher(index_params, search_params)
 
     des0 = numpy.float32(des0)
     des1 = numpy.float32(des1)
-    matches = flann.knnMatch(des0, des1, k = 2)
+    matches = matcher.knnMatch(des0, des1, k = 2)
 
     # Prepare an empty mask to draw good matches
     mask_matches = [[0,0] for i in range(len(matches))]

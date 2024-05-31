@@ -201,8 +201,10 @@ def orbFinder():
     # BRIEF (Binary Robust Independent Elementary Features): a descriptor
 
     # Load the images.
-    img0 = cv2.imread('../../../images/nasa_logo.png', cv2.IMREAD_GRAYSCALE)    # query image
-    img1 = cv2.imread('../../../images/kennedy_space_center.jpg', cv2.IMREAD_GRAYSCALE) # scene
+    # img0 = cv2.imread('../../../images/nasa_logo.png', cv2.IMREAD_GRAYSCALE)    # query image
+    # img1 = cv2.imread('../../../images/kennedy_space_center.jpg', cv2.IMREAD_GRAYSCALE) # scene
+    img0 = cv2.imread('../../../images/tattoos/query.png', cv2.IMREAD_GRAYSCALE)    # query image
+    img1 = cv2.imread('../../../images/tattoos/anchor-man.png', cv2.IMREAD_GRAYSCALE) # scene
 
     # Perform ORB feature detection and description
     orb = cv2.ORB.create()
@@ -277,12 +279,15 @@ def orbFinder():
             # (a) there is a pair and
             # (b) the distance (smaller is closer match) of the first element is
             #     less than 80% of the distance of the second element.
+            thresh = 0.8    # smaller value gives more stringent requirement
             matches = [x[0] for x in pairs_of_matches
-                       if len(x) > 1 and x[0].distance < 0.8 * x[1].distance]
+                       if len(x) > 1 and x[0].distance < thresh * x[1].distance]
 
             # Draw the best (up to) 25 matches
             img_matches = cv2.drawMatches(img0, kp0, img1, kp1, matches[:25], img1,
                                           flags=cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+
+            print("Number of matches:",len(matches))
 
             # Show the matches
             plt.imshow(img_matches)
@@ -360,3 +365,84 @@ def orbFinderFLANN():
     plt.show()
 
     cv2.waitKey()   # wait here until the image is closed.
+
+
+
+def homographicFinder():
+
+    # Reference: https://docs.opencv.org/4.9.0/d1/de0/tutorial_py_feature_homography.html
+
+    # Load the images.
+    # img0 = cv2.imread('../../../images/nasa_logo.png', cv2.IMREAD_GRAYSCALE)    # query image
+    # img1 = cv2.imread('../../../images/kennedy_space_center.jpg', cv2.IMREAD_GRAYSCALE) # scene
+    img0 = cv2.imread('../../../images/tattoos/query.png', cv2.IMREAD_GRAYSCALE)    # query image
+    img1 = cv2.imread('../../../images/tattoos/anchor-man.png', cv2.IMREAD_GRAYSCALE) # scene
+
+    # Perform ORB feature detection and description
+    # Reference: https://docs.opencv.org/3.4/db/d95/classcv_1_1ORB.html
+    orb = cv2.ORB.create()
+
+    # Set the scale factor
+    scale = -1
+    while scale < 1.0 or scale > 2.0:
+        scale = float(input("Enter scale factor (1.0 - 2.0): "))
+    orb.setScaleFactor(scale)
+
+    # Set number of levels
+    size = img1.shape
+    minDimension = min(size[0], size[1])
+    nlevels = int(numpy.log(minDimension/4) / numpy.log(scale))
+    print("Number of levels: ", nlevels)
+    orb.setNLevels(nlevels)
+
+    # Set the threshold
+    thresh = -1
+    while thresh not in range(256):
+        thresh = int(input("Enter threshold (0-255): "))
+    orb.setFastThreshold(thresh)
+
+    kp0, des0 = orb.detectAndCompute(img0, None)
+    kp1, des1 = orb.detectAndCompute(img1, None)
+
+    # Define FLANN-based matching parameters
+    FLANN_INDEX_KDTREE = 1
+    index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees = 5)
+    search_params = dict(checks=50)
+
+    # Perform FLANN-based matching
+    matcher = cv2.FlannBasedMatcher(index_params, search_params)
+
+    des0 = numpy.float32(des0)
+    des1 = numpy.float32(des1)
+    matches = matcher.knnMatch(des0, des1, k = 2)
+
+    # Find all good matches using the ratio test.
+    good_matches = []
+    print("Matches  i    m     t    q     m t  n     n t   ratio")
+    print("              dist  img  des   des  dist  des")
+    print("                    idx  idx   idx        idx")
+    print("-----------------------------------------------------")
+    for i, (m,n) in enumerate(matches):
+        if m.distance < 0.8 * n.distance:   # originally, threshold was 0.7
+            good_matches.append(m)
+
+            print("     %5d   %6.2f %3d  %3d  %3d %6.2f  %3d %7.4f"%
+                  (i, m.distance, m.imgIdx, m.queryIdx, \
+                   m.trainIdx, n.distance,  n.trainIdx, (m.distance/n.distance)))
+
+    MIN_NUM_GOOD_MATCHES = 4    # should be 10, ideally
+
+    # Get the keypoints for the good matches
+    # Note: -1 as parameter for reshape means that this dimension's size will be
+    # determined so that all value of keypoints will fit in the 3D array.
+    src_pts = numpy.float32([kp0[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
+    dst_pts = numpy.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
+
+    # Find the homography
+    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+    mask_matches = mask.ravel().tolist()
+
+
+
+
+    pass

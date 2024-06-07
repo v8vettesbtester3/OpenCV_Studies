@@ -404,45 +404,83 @@ def homographicFinder():
     kp0, des0 = orb.detectAndCompute(img0, None)
     kp1, des1 = orb.detectAndCompute(img1, None)
 
-    # Define FLANN-based matching parameters
-    FLANN_INDEX_KDTREE = 1
-    index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees = 5)
-    search_params = dict(checks=50)
+    if len(kp0) == 0:
+        print("No keypoints found in query image.")
+    elif len(kp1) == 0:
+        print("No keypoints found in scene image.")
+    else:
+        # Keypoints have been found in both the query and scene images.
+        print(len(kp0),"keypoints found in query image.")
+        print(len(kp1),"keypoints found in scene image.")
 
-    # Perform FLANN-based matching
-    matcher = cv2.FlannBasedMatcher(index_params, search_params)
+        # Define FLANN-based matching parameters
+        FLANN_INDEX_KDTREE = 1
+        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees = 5)
+        search_params = dict(checks=50)
 
-    des0 = numpy.float32(des0)
-    des1 = numpy.float32(des1)
-    matches = matcher.knnMatch(des0, des1, k = 2)
+        # Perform FLANN-based matching
+        matcher = cv2.FlannBasedMatcher(index_params, search_params)
 
-    # Find all good matches using the ratio test.
-    good_matches = []
-    print("Matches  i    m     t    q     m t  n     n t   ratio")
-    print("              dist  img  des   des  dist  des")
-    print("                    idx  idx   idx        idx")
-    print("-----------------------------------------------------")
-    for i, (m,n) in enumerate(matches):
-        if m.distance < 0.8 * n.distance:   # originally, threshold was 0.7
-            good_matches.append(m)
+        des0 = numpy.float32(des0)
+        des1 = numpy.float32(des1)
+        matches = matcher.knnMatch(des0, des1, k = 2)
 
-            print("     %5d   %6.2f %3d  %3d  %3d %6.2f  %3d %7.4f"%
-                  (i, m.distance, m.imgIdx, m.queryIdx, \
-                   m.trainIdx, n.distance,  n.trainIdx, (m.distance/n.distance)))
+        # Find all good matches using the ratio test.
+        good_matches = []
+        print("Matches  i    m     t    q     m t  n     n t   ratio")
+        print("              dist  img  des   des  dist  des")
+        print("                    idx  idx   idx        idx")
+        print("-----------------------------------------------------")
+        for i, (m,n) in enumerate(matches):
+            if m.distance < 0.8 * n.distance:   # originally, threshold was 0.7
+                good_matches.append(m)
 
-    MIN_NUM_GOOD_MATCHES = 4    # should be 10, ideally
+                print("     %5d   %6.2f %3d  %3d  %3d %6.2f  %3d %7.4f"%
+                      (i, m.distance, m.imgIdx, m.queryIdx, \
+                       m.trainIdx, n.distance,  n.trainIdx, (m.distance/n.distance)))
 
-    # Get the keypoints for the good matches
-    # Note: -1 as parameter for reshape means that this dimension's size will be
-    # determined so that all value of keypoints will fit in the 3D array.
-    src_pts = numpy.float32([kp0[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
-    dst_pts = numpy.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
+        MIN_NUM_GOOD_MATCHES = 4    # should be 10, ideally
+        print("Found",len(good_matches),"good matches.")
+        print("Must have at least",MIN_NUM_GOOD_MATCHES)
+        if len(good_matches) >= MIN_NUM_GOOD_MATCHES:
 
-    # Find the homography
-    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-    mask_matches = mask.ravel().tolist()
+            # Get the keypoints for the good matches
+            # Note: -1 as parameter for reshape means that this dimension's size will be
+            # determined so that all value of keypoints will fit in the 3D array.
+            src_pts = numpy.float32([kp0[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
+            dst_pts = numpy.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
 
+            # Find the homography
+            M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+            mask_matches = mask.ravel().tolist()
 
+            # Perform a perspective transformation that takes the rectangular
+            # corners of the query image and projects them into the scene for
+            # the purpose of drawing the border.
+            h, w = img0.shape
+            src_corners = numpy.float32([[0,0], [0,h-1], [w-1, h-1], [w-1, 0]]).reshape(-1,1,2)
+            dst_corners = cv2.perspectiveTransform(src_corners, M)
+            dst_corners = dst_corners.astype(numpy.int32)
 
+            # Draw the bounds of the matched region based on the homography
+            num_corners = len(dst_corners)
+            for i in range (num_corners):
+                x0, y0 = dst_corners[i][0]
+                if i == num_corners -1:
+                    next_i = 0
+                else:
+                    next_i = i+1
+                x1, y1 = dst_corners[next_i][0]
+                cv2.line(img1, (x0, y0), (x1, y1), 255, 3, cv2.LINE_AA)
 
-    pass
+            # Draw the keypoints
+            # Draw the best (up to) 25 matches
+            img_matches = cv2.drawMatches(img0, kp0, img1, kp1, good_matches[:25], img1,
+                                          flags=cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+
+            # Show the matches
+            plt.imshow(img_matches)
+            plt.show()
+
+        else:
+            print("Insufficient good matches found.")
